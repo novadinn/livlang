@@ -1,0 +1,27 @@
+fun factorial(n : int) -> int {
+	if(n <= 1) {
+		return 1;
+	}
+
+	return n * factorial(n - 1);
+}
+
+var a = factorial(5);
+
+var arr[4] : int {1, 3, 5, 7};
+
+print(arr[0]);
+print(arr[1]);
+print(arr[2]);
+print(arr[3]);
+
+var arr2[4] : int;
+arr2[0] = 100;
+arr2[1] = 101;
+arr2[2] = 102;
+arr2[3] = 103;
+
+print(arr2[0]);
+print(arr2[1]);
+print(arr2[2]);
+print(arr2[3]);
