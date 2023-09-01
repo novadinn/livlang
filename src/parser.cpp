@@ -9,7 +9,7 @@ typedef struct Parser {
 static Parser *parser;
 
 b8 parser_system_initialize(std::vector<Token> &tokens) {
-  V_ASSERT_MSG(!parser, "vlang: parser already initialized!");
+  V_ASSERT_MSG(!parser, "vlad: parser already initialized!");
 
   parser = (Parser *)malloc(sizeof(*parser));
   parser->tokens = &tokens;

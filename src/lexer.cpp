@@ -20,7 +20,7 @@ typedef struct Lexer {
 static Lexer *lexer;
 
 b8 lexer_system_initialize(char *source) {
-  V_ASSERT_MSG(!lexer, "vlang: lexer already initialized!");
+  V_ASSERT_MSG(!lexer, "vlad: lexer already initialized!");
 
   lexer = (Lexer *)malloc(sizeof(*lexer));
   lexer->source = source;
@@ -93,7 +93,7 @@ Token lexer_read_token() {
       while (1) {
         c = lexer_next_letter();
         if (c == EOF) {
-          V_FATAL("vlang: unexpected end of file");
+          V_FATAL("vlad: unexpected end of file");
         }
         if (c == '*') {
           if ((c = lexer_next_letter()) == '/') {
@@ -144,14 +144,14 @@ Token lexer_read_token() {
     if ((c = lexer_next_letter()) == '&') {
       token.type = TokenType::TOKEN_TYPE_AND;
     } else {
-      V_FATAL("vlang: invalid token at line %d", lexer->line);
+      V_FATAL("vlad: invalid token at line %d", lexer->line);
     }
   } break;
   case '|': {
     if ((c = lexer_next_letter()) == '|') {
       token.type = TokenType::TOKEN_TYPE_OR;
     } else {
-      V_FATAL("vlang: invalid token at line %d", lexer->line);
+      V_FATAL("vlad: invalid token at line %d", lexer->line);
     }
   } break;
   case ';': {
@@ -189,7 +189,7 @@ Token lexer_read_token() {
     token.value.character = lexer_read_char();
 
     if (lexer_next_letter() != '\'') {
-      V_FATAL("vlang: exprected '\\'' at end of char literal");
+      V_FATAL("vlad: exprected '\\'' at end of char literal");
     }
   } break;
   case '"': {
@@ -222,7 +222,7 @@ Token lexer_read_token() {
       token.value.identifier = buf;
       break;
     } else {
-      V_FATAL("vlang: unrecognised character %c on line %d", c, lexer->line);
+      V_FATAL("vlad: unrecognised character %c on line %d", c, lexer->line);
     }
   } break;
   };
@@ -242,7 +242,7 @@ f64 lexer_read_number(char c, b8 *has_decimal) {
     if (c == '.') {
       *has_decimal = true;
       if (decimal_pos >= 0) {
-        V_FATAL("vlang: invalid float value");
+        V_FATAL("vlad: invalid float value");
       }
 
       decimal_pos = num_digits;
@@ -296,7 +296,7 @@ char lexer_read_char() {
     case '\'':
       return '\'';
     default:
-      V_FATAL("vlang: unknown escape sequence %c", c);
+      V_FATAL("vlad: unknown escape sequence %c", c);
     }
   }
 
@@ -317,7 +317,7 @@ std::string lexer_read_string() {
     buf[i] = c;
   }
 
-  V_FATAL("vlang: string literal too long on line %d", lexer->line);
+  V_FATAL("vlad: string literal too long on line %d", lexer->line);
 
   return "";
 }
@@ -329,7 +329,7 @@ std::string lexer_read_identifier(char c) {
 
   while (isalpha(c) || isdigit(c) || c == '_') {
     if (i == (IDENTIFIER_MAX_LENGTH - 1)) {
-      V_FATAL("vlang: identifier too long on line %d", lexer->line);
+      V_FATAL("vlad: identifier too long on line %d", lexer->line);
     }
 
     buf[i++] = c;
@@ -343,7 +343,7 @@ std::string lexer_read_identifier(char c) {
 }
 
 TokenType lexer_read_keyword(const std::string &s) {
-  V_ASSERT_MSG(s.empty(), "vlang: empty string error in lexer_read_keyword");
+  V_ASSERT_MSG(s.empty(), "vlad: empty string error in lexer_read_keyword");
 
   switch (s[0]) {
   case 'i': {
@@ -410,7 +410,7 @@ char lexer_next_letter() {
   char c;
 
   V_ASSERT_MSG(lexer->index < strlen(lexer->source),
-               "vlang: lexer source index out of range");
+               "vlad: lexer source index out of range");
   c = lexer->source[lexer->index++];
   if (c == '\n')
     ++lexer->line;

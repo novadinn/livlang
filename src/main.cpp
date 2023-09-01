@@ -11,14 +11,14 @@ b8 read_file(const char *path, char **buf);
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    V_FATAL("vlang: no input files");
+    V_FATAL("vlad: no input files");
     exit(1);
   }
 
   const char *file_path = argv[1];
   char *source;
   if (!read_file(argv[1], &source)) {
-    V_FATAL("vlang: failed to read file");
+    V_FATAL("vlad: failed to read file");
     exit(1);
   }
 
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 b8 read_file(const char *path, char **buf) {
   FILE *f = fopen(path, "rb");
   if (f == NULL) {
-    V_FATAL("vlang: file %s can't be opened", path);
+    V_FATAL("vlad: file %s can't be opened", path);
     return false;
   }
 
