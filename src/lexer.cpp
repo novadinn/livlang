@@ -332,18 +332,19 @@ std::string lexer_read_identifier(char c) {
       V_FATAL("vlad: identifier too long on line %d", lexer->line);
     }
 
-    buf[i++] = c;
+    i++;
+    buf.push_back(c);
     c = lexer_next_letter();
   }
 
   lexer->index--;
-  buf[i] = '\0';
+  buf.push_back('\0');
 
   return buf;
 }
 
 TokenType lexer_read_keyword(const std::string &s) {
-  V_ASSERT_MSG(s.empty(), "vlad: empty string error in lexer_read_keyword");
+  V_ASSERT_MSG(!s.empty(), "vlad: empty string error in lexer_read_keyword");
 
   switch (s[0]) {
   case 'i': {

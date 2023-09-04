@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
   parser_system_initialize(tokens);
 
-  parser_build_tree();
+  ASTNode tree = parser_build_tree();
 
   parser_system_shutdown();
 
