@@ -7,66 +7,69 @@
 
 #include <vector>
 
-b8 parser_system_initialize(std::vector<Token> &tokens);
-void parser_system_shutdown();
+typedef struct Parser {
+  std::vector<Token> *tokens;
+  u32 current_token;
+} Parser;
+ 
+Parser *parser_create(std::vector<Token> &tokens);
+void parser_destroy(Parser *parser);
 
-ASTNode parser_build_tree();
+ASTNode parser_build_tree(Parser *parser);
 
-ASTNode parser_make_node(ASTNodeType type, std::vector<ASTNode> children = {}, TokenValue value = {});
+ASTNode parser_make_node(Parser *parser, ASTNodeType type, std::vector<ASTNode> children = {}, TokenValue value = {});
 
-Token &parser_token();
-void parser_next_token();
-void parser_prev_token();
-ASTNodeType parser_arithop(TokenType type);
-int parser_operation_precedence(ASTNodeType type);
-bool parser_right_assoc(TokenType type);
-bool parser_operation_binary();
+Token &parser_token(Parser *parser);
+void parser_next_token(Parser *parser);
+void parser_prev_token(Parser *parser);
+ASTNodeType parser_arithop(Parser *parser, TokenType type);
+int parser_operation_precedence(Parser *parser, ASTNodeType type);
+bool parser_right_assoc(Parser *parser, TokenType type);
+bool parser_operation_binary(Parser *parser);
 
-void parser_match(TokenType type);
-bool parser_match_b(TokenType type);
-void parser_match_str();
-void parser_match_type();
+void parser_match(Parser *parser, TokenType type);
+bool parser_match_b(Parser *parser, TokenType type);
+void parser_match_str(Parser *parser);
+void parser_match_type(Parser *parser);
 
-ASTNode parser_ident();
-ASTNode parser_prefix();
-ASTNode parser_postfix();
-ASTNode parser_literal();
-ASTNode parser_array_access();
-ASTNode parser_funccall();
-ASTNode parser_binexpr(int pr);
-std::vector<ASTNode> parser_global_statements();
-std::vector<ASTNode> parser_struct_statements();
+ASTNode parser_ident(Parser *parser);
+ASTNode parser_prefix(Parser *parser);
+ASTNode parser_postfix(Parser *parser);
+ASTNode parser_literal(Parser *parser);
+ASTNode parser_array_access(Parser *parser);
+ASTNode parser_funccall(Parser *parser);
+ASTNode parser_binexpr(Parser *parse, int pr);
+std::vector<ASTNode> parser_global_statements(Parser *parser);
+std::vector<ASTNode> parser_struct_statements(Parser *parser);
 
-void parser_semi();
-void parser_colon();
-bool parser_colonb();
-void parser_lbrack();
-void parser_rbrack();
-void parser_lparen();
-void parser_rparen();
-void parser_lbrace();
-void parser_rbrace();
+void parser_semi(Parser *parser);
+void parser_colon(Parser *parser);
+bool parser_colonb(Parser *parser);
+void parser_lbrack(Parser *parser);
+void parser_rbrack(Parser *parser);
+void parser_lparen(Parser *parser);
+void parser_rparen(Parser *parser);
+void parser_lbrace(Parser *parser);
+void parser_rbrace(Parser *parser);
 
-std::vector<ASTNode> parser_import_statement();
-ASTNode parser_while_statement();
-ASTNode parser_for_statement();
-ASTNode parser_foreach_statement();
-ASTNode parser_if_statement();
-ASTNode parser_return_statement();
-ASTNode parser_continue_statement();
-ASTNode parser_break_statement();
-ASTNode parser_print_statement();
-ASTNode parser_using_statement();
+std::vector<ASTNode> parser_import_statement(Parser *parser);
+ASTNode parser_while_statement(Parser *parser);
+ASTNode parser_for_statement(Parser *parser);
+ASTNode parser_if_statement(Parser *parser);
+ASTNode parser_return_statement(Parser *parser);
+ASTNode parser_continue_statement(Parser *parser);
+ASTNode parser_break_statement(Parser *parser);
+ASTNode parser_print_statement(Parser *parser);
 
-ASTNode parser_fun_declaration();
-ASTNode parser_var_declaration(bool need_type = true);
-ASTNode parser_struct_member_declaration();
-ASTNode parser_fun_param_declaration();
-ASTNode parser_struct_declaration();
-ASTNode parser_ident_declaration(bool need_type = true);
+ASTNode parser_fun_declaration(Parser *parser);
+ASTNode parser_var_declaration(Parser *parser, bool need_type = true);
+ASTNode parser_struct_member_declaration(Parser *parser);
+ASTNode parser_fun_param_declaration(Parser *parser);
+ASTNode parser_struct_declaration(Parser *parser);
+ASTNode parser_ident_declaration(Parser *parser, bool need_type = true);
 
-ASTNode parser_structlit();
-ASTNode parser_block();
-ASTNode parser_type();
+ASTNode parser_structlit(Parser *parser);
+ASTNode parser_block(Parser *parser);
+ASTNode parser_type(Parser *parser);
 
 #endif // PARSER_H

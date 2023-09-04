@@ -22,20 +22,20 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  lexer_system_initialize(source);
+  Lexer *lexer = lexer_create(source);
 
-  std::vector<Token> tokens = lexer_scan(source);
+  std::vector<Token> tokens = lexer_scan(lexer);
   for (int i = 0; i < tokens.size(); ++i) {
     token_print(tokens[i]);
   }
 
-  lexer_system_shutdown();
+  lexer_destroy(lexer);
 
-  parser_system_initialize(tokens);
+  Parser *parser = parser_create(tokens);
 
-  ASTNode tree = parser_build_tree();
+  ASTNode tree = parser_build_tree(parser);
 
-  parser_system_shutdown();
+  parser_destroy(parser);
 
   free(source);
 
