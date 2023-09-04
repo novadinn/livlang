@@ -6,21 +6,27 @@
 #include <string>
 #include <vector>
 
-b8 lexer_system_initialize(char *source);
-void lexer_system_shutdown();
+typedef struct Lexer {
+  char *source;
+  i64 index;
+  i64 line;
+} Lexer;
 
-std::vector<Token> lexer_scan(char *src);
-Token lexer_read_token();
-f64 lexer_read_number(char c, b8 *has_decimal);
-char lexer_read_char();
-std::string lexer_read_string();
-std::string lexer_read_identifier(char c);
-TokenType lexer_read_keyword(const std::string &s);
+Lexer *lexer_create(char *source);
+void lexer_destroy(Lexer *lexer);
 
-char lexer_next_letter();
-char lexer_next_letter_skip();
-void lexer_skip_line();
+std::vector<Token> lexer_scan(Lexer *lexer, char *src);
+Token lexer_read_token(Lexer *lexer);
+f64 lexer_read_number(Lexer *lexer, char c, b8 *has_decimal);
+char lexer_read_char(Lexer *lexer);
+std::string lexer_read_string(Lexer *lexer);
+std::string lexer_read_identifier(Lexer *lexer, char c);
+TokenType lexer_read_keyword(Lexer *lexer, const std::string &s);
 
-char lexer_char_pos(char *s, char c);
+char lexer_next_letter(Lexer *lexer);
+char lexer_next_letter_skip(Lexer *lexer);
+void lexer_skip_line(Lexer *lexer);
+
+char lexer_char_pos(Lexer *lexer, char *s, char c);
 
 #endif // LEXER_H

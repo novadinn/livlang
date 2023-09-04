@@ -11,32 +11,22 @@
 #define IDENTIFIER_MAX_LENGTH 255
 #define MAX_TEXT_LENGTH 2048
 
-typedef struct Lexer {
-  char *source;
-  i64 index;
-  i64 line;
-} Lexer;
-
-static Lexer *lexer;
-
-b8 lexer_system_initialize(char *source) {
-  V_ASSERT_MSG(!lexer, "vlad: lexer already initialized!");
-
-  lexer = (Lexer *)malloc(sizeof(*lexer));
+Lexer *lexer_create(char *source) {
+  Lexer *lexer = (Lexer *)malloc(sizeof(*lexer));
   lexer->source = source;
   lexer->index = 0;
   lexer->line = 0;
 
-  return true;
+  return lexer;
 }
 
-void lexer_system_shutdown() { free(lexer); }
+void lexer_destroy(Lexer *lexer) { free(lexer); }
 
-std::vector<Token> lexer_scan(char *src) {
+std::vector<Token> lexer_scan(Lexer *lexer, char *src) {
   std::vector<Token> token_stream;
   Token token;
 
-  while ((token = lexer_read_token()).type != TokenType::TOKEN_TYPE_EOF) {
+  while ((token = lexer_read_token(lexer)).type != TokenType::TOKEN_TYPE_EOF) {
     token_stream.push_back(token);
   }
   token_stream.push_back(token);
@@ -44,16 +34,16 @@ std::vector<Token> lexer_scan(char *src) {
   return token_stream;
 }
 
-Token lexer_read_token() {
+Token lexer_read_token(Lexer *lexer) {
   Token token;
-  char c = lexer_next_letter_skip();
+  char c = lexer_next_letter_skip(lexer);
 
   switch (c) {
   case EOF: {
     token.type = TokenType::TOKEN_TYPE_EOF;
   } break;
   case '+': {
-    if ((c = lexer_next_letter()) == '+') {
+    if ((c = lexer_next_letter(lexer)) == '+') {
       token.type = TokenType::TOKEN_TYPE_INC;
     } else {
       lexer->index--;
@@ -61,14 +51,14 @@ Token lexer_read_token() {
     }
   } break;
   case '-': {
-    c = lexer_next_letter();
+    c = lexer_next_letter(lexer);
     if (c == '>') {
       token.type = TokenType::TOKEN_TYPE_ARROW;
     } else if (c == '-') {
       token.type = TokenType::TOKEN_TYPE_DEC;
     } else if (isdigit(c)) {
       b8 has_decimal;
-      f64 val = lexer_read_number(c, &has_decimal);
+      f64 val = lexer_read_number(lexer, c, &has_decimal);
       if (has_decimal) {
         token.type = TokenType::TOKEN_TYPE_FLOATLIT;
         token.value.floating = -val;
@@ -85,19 +75,19 @@ Token lexer_read_token() {
     token.type = TokenType::TOKEN_TYPE_STAR;
   } break;
   case '/': {
-    c = lexer_next_letter();
+    c = lexer_next_letter(lexer);
     if (c == '/') {
-      lexer_skip_line();
-      return lexer_read_token();
+      lexer_skip_line(lexer);
+      return lexer_read_token(lexer);
     } else if (c == '*') {
       while (1) {
-        c = lexer_next_letter();
+        c = lexer_next_letter(lexer);
         if (c == EOF) {
           V_FATAL("vlad: unexpected end of file");
         }
         if (c == '*') {
-          if ((c = lexer_next_letter()) == '/') {
-            return lexer_read_token();
+          if ((c = lexer_next_letter(lexer)) == '/') {
+            return lexer_read_token(lexer);
           } else {
             lexer->index--;
           }
@@ -109,7 +99,7 @@ Token lexer_read_token() {
     }
   } break;
   case '=': {
-    if ((c = lexer_next_letter()) == '=') {
+    if ((c = lexer_next_letter(lexer)) == '=') {
       token.type = TokenType::TOKEN_TYPE_EQ;
     } else {
       lexer->index--;
@@ -117,7 +107,7 @@ Token lexer_read_token() {
     }
   } break;
   case '!': {
-    if ((c = lexer_next_letter()) == '=') {
+    if ((c = lexer_next_letter(lexer)) == '=') {
       token.type = TokenType::TOKEN_TYPE_NE;
     } else {
       lexer->index--;
@@ -125,7 +115,7 @@ Token lexer_read_token() {
     }
   } break;
   case '<': {
-    if ((c = lexer_next_letter()) == '=') {
+    if ((c = lexer_next_letter(lexer)) == '=') {
       token.type = TokenType::TOKEN_TYPE_LE;
     } else {
       lexer->index--;
@@ -133,7 +123,7 @@ Token lexer_read_token() {
     }
   } break;
   case '>': {
-    if ((c = lexer_next_letter()) == '=') {
+    if ((c = lexer_next_letter(lexer)) == '=') {
       token.type = TokenType::TOKEN_TYPE_GE;
     } else {
       lexer->index--;
@@ -141,14 +131,14 @@ Token lexer_read_token() {
     }
   } break;
   case '&': {
-    if ((c = lexer_next_letter()) == '&') {
+    if ((c = lexer_next_letter(lexer)) == '&') {
       token.type = TokenType::TOKEN_TYPE_AND;
     } else {
       V_FATAL("vlad: invalid token at line %d", lexer->line);
     }
   } break;
   case '|': {
-    if ((c = lexer_next_letter()) == '|') {
+    if ((c = lexer_next_letter(lexer)) == '|') {
       token.type = TokenType::TOKEN_TYPE_OR;
     } else {
       V_FATAL("vlad: invalid token at line %d", lexer->line);
@@ -186,20 +176,20 @@ Token lexer_read_token() {
   } break;
   case '\'': {
     token.type = TokenType::TOKEN_TYPE_CHARLIT;
-    token.value.character = lexer_read_char();
+    token.value.character = lexer_read_char(lexer);
 
-    if (lexer_next_letter() != '\'') {
+    if (lexer_next_letter(lexer) != '\'') {
       V_FATAL("vlad: exprected '\\'' at end of char literal");
     }
   } break;
   case '"': {
     token.type = TOKEN_TYPE_STRLIT;
-    token.value.string = lexer_read_string();
+    token.value.string = lexer_read_string(lexer);
   } break;
   default: {
     if (isdigit(c)) {
       b8 has_decimal;
-      f64 val = lexer_read_number(c, &has_decimal);
+      f64 val = lexer_read_number(lexer, c, &has_decimal);
       if (has_decimal) {
         token.type = TokenType::TOKEN_TYPE_FLOATLIT;
         token.value.floating = val;
@@ -211,9 +201,10 @@ Token lexer_read_token() {
       std::string buf;
       TokenType type;
 
-      buf = lexer_read_identifier(c);
+      buf = lexer_read_identifier(lexer, c);
 
-      if ((type = lexer_read_keyword(buf)) != TokenType::TOKEN_TYPE_NONE) {
+      if ((type = lexer_read_keyword(lexer, buf)) !=
+          TokenType::TOKEN_TYPE_NONE) {
         token.type = type;
         break;
       }
@@ -230,7 +221,7 @@ Token lexer_read_token() {
   return token;
 }
 
-f64 lexer_read_number(char c, b8 *has_decimal) {
+f64 lexer_read_number(Lexer *lexer, char c, b8 *has_decimal) {
   i32 k, val = 0;
   f64 fval = 0;
   i32 num_digits = 0;
@@ -238,7 +229,7 @@ f64 lexer_read_number(char c, b8 *has_decimal) {
 
   *has_decimal = false;
 
-  while ((k = lexer_char_pos("0123456789.", c)) >= 0) {
+  while ((k = lexer_char_pos(lexer, "0123456789.", c)) >= 0) {
     if (c == '.') {
       *has_decimal = true;
       if (decimal_pos >= 0) {
@@ -251,7 +242,7 @@ f64 lexer_read_number(char c, b8 *has_decimal) {
       num_digits++;
     }
 
-    c = lexer_next_letter();
+    c = lexer_next_letter(lexer);
   }
 
   if (decimal_pos >= 0) {
@@ -269,12 +260,12 @@ f64 lexer_read_number(char c, b8 *has_decimal) {
   return fval;
 }
 
-char lexer_read_char() {
+char lexer_read_char(Lexer *lexer) {
   char c;
 
-  c = lexer_next_letter();
+  c = lexer_next_letter(lexer);
   if (c == '\\') {
-    switch (c = lexer_next_letter()) {
+    switch (c = lexer_next_letter(lexer)) {
     case 'a':
       return '\a';
     case 'b':
@@ -303,14 +294,14 @@ char lexer_read_char() {
   return c;
 }
 
-std::string lexer_read_string() {
+std::string lexer_read_string(Lexer *lexer) {
   int i;
   char c;
   std::string buf;
   buf.reserve(MAX_TEXT_LENGTH);
 
   for (i = 0; i < MAX_TEXT_LENGTH - 1; ++i) {
-    if ((c = lexer_read_char()) == '"') {
+    if ((c = lexer_read_char(lexer)) == '"') {
       buf[i] = 0;
       return buf;
     }
@@ -322,7 +313,7 @@ std::string lexer_read_string() {
   return "";
 }
 
-std::string lexer_read_identifier(char c) {
+std::string lexer_read_identifier(Lexer *lexer, char c) {
   std::string buf;
   buf.reserve(IDENTIFIER_MAX_LENGTH);
   i32 i = 0;
@@ -332,8 +323,9 @@ std::string lexer_read_identifier(char c) {
       V_FATAL("vlad: identifier too long on line %d", lexer->line);
     }
 
-    buf[i++] = c;
-    c = lexer_next_letter();
+    buf.push_back(c);
+    i++;
+    c = lexer_next_letter(lexer);
   }
 
   lexer->index--;
@@ -342,8 +334,8 @@ std::string lexer_read_identifier(char c) {
   return buf;
 }
 
-TokenType lexer_read_keyword(const std::string &s) {
-  V_ASSERT_MSG(s.empty(), "vlad: empty string error in lexer_read_keyword");
+TokenType lexer_read_keyword(Lexer *lexer, const std::string &s) {
+  V_ASSERT_MSG(!s.empty(), "vlad: empty string error in lexer_read_keyword");
 
   switch (s[0]) {
   case 'i': {
@@ -406,7 +398,7 @@ TokenType lexer_read_keyword(const std::string &s) {
   return TokenType::TOKEN_TYPE_NONE;
 }
 
-char lexer_next_letter() {
+char lexer_next_letter(Lexer *lexer) {
   char c;
 
   V_ASSERT_MSG(lexer->index < strlen(lexer->source),
@@ -418,23 +410,23 @@ char lexer_next_letter() {
   return c;
 }
 
-char lexer_next_letter_skip() {
-  char c = lexer_next_letter();
+char lexer_next_letter_skip(Lexer *lexer) {
+  char c = lexer_next_letter(lexer);
 
   while (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f')
-    c = lexer_next_letter();
+    c = lexer_next_letter(lexer);
 
   return c;
 }
 
-void lexer_skip_line() {
+void lexer_skip_line(Lexer *lexer) {
   int line = lexer->line;
 
   while (line == lexer->line)
-    lexer_next_letter();
+    lexer_next_letter(lexer);
 }
 
-char lexer_char_pos(char *s, char c) {
+char lexer_char_pos(Lexer *lexer, char *s, char c) {
   char *p;
 
   p = strchr(s, c);
