@@ -1,3 +1,5 @@
+import "test1.vlad";
+
 fun factorial(n : int) -> int {
 	if(n <= 1) {
 		return 1;

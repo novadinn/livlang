@@ -15,4 +15,5 @@ add_executable(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
 )

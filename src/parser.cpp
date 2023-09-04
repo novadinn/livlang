@@ -1,7 +1,8 @@
 #include "parser.h"
 #include "lexer.h"
 #include "logger.h"
- 
+#include "utils.h" 
+
 Parser *parser_create(std::vector<Token> &tokens) {
   Parser *parser = (Parser *)malloc(sizeof(*parser));
   parser->tokens = &tokens;
@@ -478,13 +479,22 @@ std::vector<ASTNode> parser_import_statement(Parser *parser) {
   
   parser_semi(parser);
 
-  Lexer *lexer = lexer_create(value.string.c_str());
+  char *buf;
+  if (!read_file(value.string.c_str(), &buf)) {
+    V_FATAL("vlad: failed to read file %s", value.string.c_str());
+  }
+
+  Lexer *lexer = lexer_create(buf);
 
   std::vector<Token> tokens = lexer_scan(lexer);
 
   Parser *import_parser = parser_create(tokens);
 
   ASTNode tree = parser_build_tree(import_parser);
+
+  free(buf);
+
+  lexer_destroy(lexer);
 
   parser_destroy(import_parser);
 

@@ -302,10 +302,10 @@ std::string lexer_read_string(Lexer *lexer) {
 
   for (i = 0; i < MAX_TEXT_LENGTH - 1; ++i) {
     if ((c = lexer_read_char(lexer)) == '"') {
-      buf[i] = 0;
+      buf.push_back(0);
       return buf;
     }
-    buf[i] = c;
+    buf.push_back(c);
   }
 
   V_FATAL("vlad: string literal too long on line %d", lexer->line);
