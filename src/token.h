@@ -75,8 +75,6 @@ typedef enum TokenType {
   TOKEN_TYPE_RBRACK,
   /* import keyword */
   TOKEN_TYPE_IMPORT,
-  /* struct keyword */
-  TOKEN_TYPE_STRUCT,
   /* var keyword */
   TOKEN_TYPE_VAR,
   /* fun keyword */
@@ -113,7 +111,7 @@ typedef enum TokenType {
 typedef struct TokenValue {
   i64 integer;
   f64 floating;
-  char character;
+  u8 character;
   std::string string;
   std::string identifier;
 } TokenValue;

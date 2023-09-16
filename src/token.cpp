@@ -4,14 +4,14 @@
 
 void token_print(Token token) {
   const char *types[TOKEN_TYPE_MAX + 1] = {
-      "NONE",   "EOF",    "PLUS",     "MINUS",  "STAR",     "SLASH",   "EQ",
-      "NE",     "LT",     "GT",       "LE",     "GE",       "AND",     "OR",
-      "ASSIGN", "INC",    "DEC",      "INTLIT", "FLOATLIT", "CHARLIT", "STRLIT",
-      "IDENT",  "SEMI",   "COLON",    "COMMA",  "ARROW",    "DOT",     "EXMARK",
-      "LBRACE", "RBRACE", "LPAREN",   "RPAREN", "LBRACK",   "RBRACK",  "IMPORT",
-      "STRUCT", "VAR",    "FUN",      "IF",     "ELSE",     "WHILE",   "FOR",
-      "RETURN", "BREAK",  "CONTINUE", "VOID",   "INT",      "FLOAT",   "CHAR",
-      "STRING", "PRINT",  "MAX",
+      "NONE",   "EOF",      "PLUS",   "MINUS",  "STAR",     "SLASH",   "EQ",
+      "NE",     "LT",       "GT",     "LE",     "GE",       "AND",     "OR",
+      "ASSIGN", "INC",      "DEC",    "INTLIT", "FLOATLIT", "CHARLIT", "STRLIT",
+      "IDENT",  "SEMI",     "COLON",  "COMMA",  "ARROW",    "DOT",     "EXMARK",
+      "LBRACE", "RBRACE",   "LPAREN", "RPAREN", "LBRACK",   "RBRACK",  "IMPORT",
+      "VAR",    "FUN",      "IF",     "ELSE",   "WHILE",    "FOR",     "RETURN",
+      "BREAK",  "CONTINUE", "VOID",   "INT",    "FLOAT",    "CHAR",    "STRING",
+      "PRINT",  "MAX",
   };
 
   switch (token.type) {

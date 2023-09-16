@@ -1,29 +1,34 @@
-import "test1.vlad";
+import "math.vlad";
 
-fun factorial(n : int) -> int {
-	if(n <= 1) {
-		return 1;
+fun print_elements(arr : array, n : int) -> void {
+	for(var i = 0; i < n; i++) {
+		print(arr[i]);
 	}
-
-	return n * factorial(n - 1);
 }
 
-var a = factorial(5);
+fun even_to(n : int) -> array {
+	var arr[n] : int;
 
-var arr[4] : int {1, 3, 5, 7};
+	var i : int = 0;
+	while(i < n) {
+		arr[i] = (i * 2);
+		i++;
+	}
 
-print(arr[0]);
-print(arr[1]);
-print(arr[2]);
-print(arr[3]);
+	return arr;
+}
 
-var arr2[4] : int;
-arr2[0] = 100;
-arr2[1] = 101;
-arr2[2] = 102;
-arr2[3] = 103;
+print("--------Factorial--------");
+print(factorial(5));
 
-print(arr2[0]);
-print(arr2[1]);
-print(arr2[2]);
-print(arr2[3]);
+print("-----Array elements------");
+var n : int = 10;
+var even = even_to(n);
+print_elements(even, n);
+
+var str : string = "Hello, World!";
+print("---------String----------");
+print(str);
+
+print("----------Float----------");
+print(mul(1.5, 15.0));

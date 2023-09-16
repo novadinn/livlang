@@ -11,8 +11,21 @@
 #define IDENTIFIER_MAX_LENGTH 255
 #define MAX_TEXT_LENGTH 2048
 
+static Token lexer_read_token(Lexer *lexer);
+static f64 lexer_read_number(Lexer *lexer, char c, b8 *has_decimal);
+static char lexer_read_char(Lexer *lexer);
+static std::string lexer_read_string(Lexer *lexer);
+static std::string lexer_read_identifier(Lexer *lexer, char c);
+static TokenType lexer_read_keyword(Lexer *lexer, const std::string &s);
+
+static char lexer_next_letter(Lexer *lexer);
+static char lexer_next_letter_skip(Lexer *lexer);
+static void lexer_skip_line(Lexer *lexer);
+
+static char lexer_char_pos(Lexer *lexer, char *s, char c);
+
 Lexer *lexer_create(const char *source) {
-  Lexer *lexer = (Lexer *)malloc(sizeof(*lexer));
+  Lexer *lexer = new Lexer();
   lexer->source = source;
   lexer->index = 0;
   lexer->line = 0;
@@ -20,7 +33,7 @@ Lexer *lexer_create(const char *source) {
   return lexer;
 }
 
-void lexer_destroy(Lexer *lexer) { free(lexer); }
+void lexer_destroy(Lexer *lexer) { delete lexer; }
 
 std::vector<Token> lexer_scan(Lexer *lexer) {
   std::vector<Token> token_stream;
@@ -34,7 +47,7 @@ std::vector<Token> lexer_scan(Lexer *lexer) {
   return token_stream;
 }
 
-Token lexer_read_token(Lexer *lexer) {
+static Token lexer_read_token(Lexer *lexer) {
   Token token;
   char c = lexer_next_letter_skip(lexer);
 
@@ -221,7 +234,7 @@ Token lexer_read_token(Lexer *lexer) {
   return token;
 }
 
-f64 lexer_read_number(Lexer *lexer, char c, b8 *has_decimal) {
+static f64 lexer_read_number(Lexer *lexer, char c, b8 *has_decimal) {
   i32 k, val = 0;
   f64 fval = 0;
   i32 num_digits = 0;
@@ -260,7 +273,7 @@ f64 lexer_read_number(Lexer *lexer, char c, b8 *has_decimal) {
   return fval;
 }
 
-char lexer_read_char(Lexer *lexer) {
+static char lexer_read_char(Lexer *lexer) {
   char c;
 
   c = lexer_next_letter(lexer);
@@ -294,7 +307,7 @@ char lexer_read_char(Lexer *lexer) {
   return c;
 }
 
-std::string lexer_read_string(Lexer *lexer) {
+static std::string lexer_read_string(Lexer *lexer) {
   int i;
   char c;
   std::string buf;
@@ -313,7 +326,7 @@ std::string lexer_read_string(Lexer *lexer) {
   return "";
 }
 
-std::string lexer_read_identifier(Lexer *lexer, char c) {
+static std::string lexer_read_identifier(Lexer *lexer, char c) {
   std::string buf;
   buf.reserve(IDENTIFIER_MAX_LENGTH);
   i32 i = 0;
@@ -334,7 +347,7 @@ std::string lexer_read_identifier(Lexer *lexer, char c) {
   return buf;
 }
 
-TokenType lexer_read_keyword(Lexer *lexer, const std::string &s) {
+static TokenType lexer_read_keyword(Lexer *lexer, const std::string &s) {
   V_ASSERT_MSG(!s.empty(), "vlad: empty string error in lexer_read_keyword");
 
   switch (s[0]) {
@@ -364,8 +377,6 @@ TokenType lexer_read_keyword(Lexer *lexer, const std::string &s) {
     }
   } break;
   case 's': {
-    if (!strcmp(s.c_str(), "struct"))
-      return TokenType::TOKEN_TYPE_STRUCT;
     if (!strcmp(s.c_str(), "string"))
       return TokenType::TOKEN_TYPE_STRING;
   } break;
@@ -398,7 +409,7 @@ TokenType lexer_read_keyword(Lexer *lexer, const std::string &s) {
   return TokenType::TOKEN_TYPE_NONE;
 }
 
-char lexer_next_letter(Lexer *lexer) {
+static char lexer_next_letter(Lexer *lexer) {
   char c;
 
   V_ASSERT_MSG(lexer->index < strlen(lexer->source),
@@ -410,7 +421,7 @@ char lexer_next_letter(Lexer *lexer) {
   return c;
 }
 
-char lexer_next_letter_skip(Lexer *lexer) {
+static char lexer_next_letter_skip(Lexer *lexer) {
   char c = lexer_next_letter(lexer);
 
   while (c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\f')
@@ -419,14 +430,14 @@ char lexer_next_letter_skip(Lexer *lexer) {
   return c;
 }
 
-void lexer_skip_line(Lexer *lexer) {
+static void lexer_skip_line(Lexer *lexer) {
   int line = lexer->line;
 
   while (line == lexer->line)
     lexer_next_letter(lexer);
 }
 
-char lexer_char_pos(Lexer *lexer, char *s, char c) {
+static char lexer_char_pos(Lexer *lexer, char *s, char c) {
   char *p;
 
   p = strchr(s, c);

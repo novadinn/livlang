@@ -2,11 +2,12 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "utils.h"
 #include "defines.h"
+#include "eval.h"
 #include "lexer.h"
 #include "logger.h"
 #include "parser.h"
+#include "utils.h"
 
 int main(int argc, char **argv) {
   if (argc != 2) {
@@ -25,7 +26,7 @@ int main(int argc, char **argv) {
 
   std::vector<Token> tokens = lexer_scan(lexer);
   for (int i = 0; i < tokens.size(); ++i) {
-    token_print(tokens[i]);
+    // token_print(tokens[i]);
   }
 
   lexer_destroy(lexer);
@@ -33,12 +34,17 @@ int main(int argc, char **argv) {
   Parser *parser = parser_create(tokens);
 
   ASTNode tree = parser_build_tree(parser);
+  ast_print(tree);
 
   parser_destroy(parser);
 
   free(source);
 
+  Enviroinment *env = enviroinment_create(nullptr);
+
+  eval(&tree, env);
+
+  enviroinment_destroy(env);
+
   return 0;
 }
-
-

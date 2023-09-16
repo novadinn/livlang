@@ -14,6 +14,9 @@ add_executable(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/logger.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ast_node.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/eval.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/enviroinment.cpp
 )
