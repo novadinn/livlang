@@ -1,9 +1,7 @@
-#ifndef TOKEN_H
-#define TOKEN_H
+#pragma once
 
 #include "defines.h"
-
-#include <string>
+#include "interpreter_value.h"
 
 typedef enum TokenType {
   TOKEN_TYPE_NONE = 0,
@@ -108,19 +106,11 @@ typedef enum TokenType {
   TOKEN_TYPE_MAX,
 } TokenType;
 
-typedef struct TokenValue {
-  i64 integer;
-  f64 floating;
-  u8 character;
-  std::string string;
-  std::string identifier;
-} TokenValue;
-
 typedef struct Token {
   u8 type;
-  TokenValue value;
+  InterpreterValue value;
 } Token;
+;
+void tokenDestroy(Token *token);
 
-void token_print(Token token);
-
-#endif // TOKEN_H
+void tokenPrint(Token *token);

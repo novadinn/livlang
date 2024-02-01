@@ -1,22 +1,18 @@
 cmake_minimum_required(VERSION 3.9)
 
-project(vlad)
+project(livlang)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build)
-
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/src
+add_executable(${PROJECT_NAME} 
+  src/main.c
+  src/logger.c
+  src/vector.c
+  src/file_io.c
+  src/token.c
+  src/lexer.c
+  src/ast_node.c
+  src/parser.c
+  src/environment.c
+  src/eval.c
 )
 
-add_executable(
-  ${PROJECT_NAME}
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/logger.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/lexer.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/token.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/ast_node.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/parser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/utils.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/eval.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/enviroinment.cpp
-)
+set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 23)

@@ -2,7 +2,22 @@
 
 #include "logger.h"
 
-void token_print(Token token) {
+#include <stdlib.h>
+
+void tokenDestroy(Token *token) {
+  switch (token->type) {
+  case TOKEN_TYPE_STRLIT: {
+    free(token->value.string);
+  } break;
+  case TOKEN_TYPE_IDENT: {
+    free(token->value.identifier);
+  } break;
+  default: {
+  } break;
+  }
+}
+
+void tokenPrint(Token *token) {
   const char *types[TOKEN_TYPE_MAX + 1] = {
       "NONE",   "EOF",      "PLUS",   "MINUS",  "STAR",     "SLASH",   "EQ",
       "NE",     "LT",       "GT",     "LE",     "GE",       "AND",     "OR",
@@ -14,24 +29,24 @@ void token_print(Token token) {
       "PRINT",  "MAX",
   };
 
-  switch (token.type) {
+  switch (token->type) {
   case TOKEN_TYPE_INTLIT: {
-    V_TRACE("%s %ld", types[token.type], token.value.integer);
+    DEBUG("%s %ld", types[token->type], token->value.integer);
   } break;
   case TOKEN_TYPE_FLOATLIT: {
-    V_TRACE("%s %f", types[token.type], token.value.floating);
+    DEBUG("%s %f", types[token->type], token->value.floating);
   } break;
   case TOKEN_TYPE_CHARLIT: {
-    V_TRACE("%s %c", types[token.type], token.value.character);
+    DEBUG("%s %c", types[token->type], token->value.character);
   } break;
   case TOKEN_TYPE_STRLIT: {
-    V_TRACE("%s %s", types[token.type], token.value.string.c_str());
+    DEBUG("%s %s", types[token->type], token->value.string);
   } break;
   case TOKEN_TYPE_IDENT: {
-    V_TRACE("%s %s", types[token.type], token.value.identifier.c_str());
+    DEBUG("%s %s", types[token->type], token->value.identifier);
   } break;
   default: {
-    V_TRACE("%s", types[token.type]);
+    DEBUG("%s", types[token->type]);
   } break;
   };
 }

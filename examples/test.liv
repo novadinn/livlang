@@ -1,4 +1,10 @@
-import "math.vlad";
+fun factorial(n : int) -> int {
+	if(n <= 1) {
+		return 1;
+	}
+
+	return n * factorial(n - 1);
+}
 
 fun print_elements(arr : array, n : int) -> void {
 	for(var i = 0; i < n; i++) {
@@ -31,4 +37,4 @@ print("---------String----------");
 print(str);
 
 print("----------Float----------");
-print(mul(1.5, 15.0));
+print(1.5 * 15.0);

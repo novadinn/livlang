@@ -1,20 +1,15 @@
-#ifndef LEXER_H
-#define LEXER_H
+#pragma once
 
+#include "defines.h"
 #include "token.h"
-
-#include <string>
-#include <vector>
 
 typedef struct Lexer {
   const char *source;
   i64 index;
-  i64 line;
+  u64 line;
 } Lexer;
 
-Lexer *lexer_create(const char *source);
-void lexer_destroy(Lexer *lexer);
+void lexerCreate(const char *source, Lexer *out_lexer);
+void lexerDestroy(Lexer *lexer);
 
-std::vector<Token> lexer_scan(Lexer *lexer);
-
-#endif // LEXER_H
+Token *lexerScan(Lexer *lexer);

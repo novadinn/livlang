@@ -1,15 +1,28 @@
 #include "ast_node.h"
 
 #include "logger.h"
+#include "vector.h"
 
-void ast_print(ASTNode &root) {
-  ast_node_print(root);
-  for (int i = 0; i < root.children.size(); ++i) {
-    ast_print(root.children[i]);
+void ASTNodeDestroy(ASTNode *node) {
+  if (node->children) {
+    for (u32 i = 0; i < vectorLength(node->children); ++i) {
+      ASTNodeDestroy(&node->children[i]);
+    }
+
+    vectorDestroy(node->children);
   }
 }
 
-void ast_node_print(ASTNode &node) {
+void ASTPrint(ASTNode *root) {
+  ASTNodePrint(root);
+  if (root->children) {
+    for (u32 i = 0; i < vectorLength(root->children); ++i) {
+      ASTPrint(&root->children[i]);
+    }
+  }
+}
+
+void ASTNodePrint(ASTNode *node) {
   const char *types[AST_NODE_TYPE_MAX + 1] = {
       "MULT",   "DIV",     "PLUS",      "MINUS",  "GT",        "LT",
       "GE",     "LE",      "EQ",        "NE",     "AND",       "OR",
@@ -20,24 +33,24 @@ void ast_node_print(ASTNode &node) {
       "CHAR",   "FLOAT",   "VOID",      "STRING", "PROGRAMM",  "BLOCK",
   };
 
-  switch (node.type) {
+  switch (node->type) {
   case AST_NODE_TYPE_INTLIT: {
-    V_TRACE("%s %ld", types[node.type], node.value.integer);
+    DEBUG("%s %ld", types[node->type], node->value.integer);
   } break;
   case AST_NODE_TYPE_FLOATLIT: {
-    V_TRACE("%s %f", types[node.type], node.value.floating);
+    DEBUG("%s %f", types[node->type], node->value.floating);
   } break;
   case AST_NODE_TYPE_CHARLIT: {
-    V_TRACE("%s %c", types[node.type], node.value.character);
+    DEBUG("%s %c", types[node->type], node->value.character);
   } break;
   case AST_NODE_TYPE_STRLIT: {
-    V_TRACE("%s %s", types[node.type], node.value.string.c_str());
+    DEBUG("%s %s", types[node->type], node->value.string);
   } break;
   case AST_NODE_TYPE_IDENT: {
-    V_TRACE("%s %s", types[node.type], node.value.identifier.c_str());
+    DEBUG("%s %s", types[node->type], node->value.identifier);
   } break;
   default: {
-    V_TRACE("%s", types[node.type]);
+    DEBUG("%s", types[node->type]);
   } break;
   };
 }

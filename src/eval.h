@@ -1,9 +1,6 @@
-#ifndef EVALUATOR_H
-#define EVALUATOR_H
+#pragma once
 
 #include "ast_node.h"
-#include "enviroinment.h"
+#include "environment.h"
 
-VladValue eval(ASTNode *node, Enviroinment *env);
-
-#endif // EVALUATOR_H
+EvalValue eval(ASTNode *node, Environment *env);

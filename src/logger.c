@@ -1,17 +1,17 @@
 #include "logger.h"
 
-#include <cstdio>
-#include <cstring>
-#include <memory>
+#include "defines.h"
+
 #include <stdarg.h>
+#include <stdio.h>
 #include <string.h>
 
-void logger_log_output(LogLevel level, const char *message, ...) {
+void logOutput(LogLevel level, const char *message, ...) {
   const char *level_strings[6] = {"[FATAL]: ", "[ERROR]: ", "[WARN]:  ",
                                   "[INFO]:  ", "[DEBUG]: ", "[TRACE]: "};
   b8 is_error = level < LOG_LEVEL_WARN;
 
-  const i32 msg_length = 32000;
+  const u32 msg_length = 32000;
   char out_message[msg_length];
   memset(out_message, 0, sizeof(out_message));
 
@@ -26,19 +26,9 @@ void logger_log_output(LogLevel level, const char *message, ...) {
   const char *color_strings[] = {"1;31", "1;35", "1;33",
                                  "1;32", "1;34", "1;30"};
 
-  /* TODO: this is platform dependent */
   if (is_error) {
     fprintf(stderr, "\033[%sm%s\033[0m", color_strings[level], out_message2);
   } else {
     printf("\033[%sm%s\033[0m", color_strings[level], out_message2);
   }
-}
-
-void logger_report_assertion_failure(const char *expression,
-                                     const char *message, const char *file,
-                                     i32 line) {
-  logger_log_output(
-      LOG_LEVEL_FATAL,
-      "Assertion Failure: %s, message: '%s', in file: %s, line: %d\n",
-      expression, message, file, line);
 }

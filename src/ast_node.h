@@ -1,10 +1,7 @@
-#ifndef AST_NODE_H
-#define AST_NODE_H
-
-#include <vector>
+#pragma once
 
 #include "defines.h"
-#include "token.h"
+#include "interpreter_value.h"
 
 typedef enum ASTNodeType {
   /* * */
@@ -99,11 +96,11 @@ typedef enum ASTNodeType {
 
 typedef struct ASTNode {
   u8 type;
-  std::vector<ASTNode> children;
-  TokenValue value;
+  InterpreterValue value;
+  struct ASTNode *children;
 } ASTNode;
 
-void ast_print(ASTNode &root);
-void ast_node_print(ASTNode &node);
+void ASTNodeDestroy(ASTNode *node);
 
-#endif // AST_NODE_H
+void ASTPrint(ASTNode *root);
+void ASTNodePrint(ASTNode *node);
